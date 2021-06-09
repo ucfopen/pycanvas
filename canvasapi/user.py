@@ -3,6 +3,7 @@ from canvasapi.canvas_object import CanvasObject
 from canvasapi.communication_channel import CommunicationChannel
 from canvasapi.feature import Feature, FeatureFlag
 from canvasapi.folder import Folder
+from canvasapi.grade_change_log import GradeChangeEvent
 from canvasapi.license import License
 from canvasapi.paginated_list import PaginatedList
 from canvasapi.pairing_code import PairingCode
@@ -630,6 +631,47 @@ class User(CanvasObject):
             "GET",
             "users/{}/folders".format(self.id),
             _kwargs=combine_kwargs(**kwargs),
+        )
+
+    def get_grade_change_events_for_grader(self, **kwargs):
+        """
+        Returns the grade change events for a grader.
+
+        :calls: `/api/v1/audit/grade_change/graders/:grader_id \
+        <https://canvas.instructure.com/doc/api/grade_change_log.html#method.grade_change_audit_api.for_grader>`_
+
+        :rtype: :class:`canvasapi.paginated_list.PaginatedList` of
+            :class:`canvasapi.grade_change_log.GradeChangeEvent`
+        """
+        return PaginatedList(
+            GradeChangeEvent,
+            self._requester,
+            "GET",
+            "audit/grade_change/graders/{}".format(self.id),
+            None,
+            "events",
+            **kwargs
+        )
+
+    def get_grade_change_events_for_student(self, **kwargs):
+        """
+        Returns the grade change events for the current student.
+
+        :calls: `/api/v1/audit/grade_change/students/:student_id \
+        <https://canvas.instructure.com/doc/api/grade_change_log.html#method.grade_change_audit_api.for_student>`_
+
+
+        :rtype: :class:`canvasapi.paginated_list.PaginatedList` of
+            :class:`canvasapi.grade_change_log.GradeChangeEvent`
+        """
+        return PaginatedList(
+            GradeChangeEvent,
+            self._requester,
+            "GET",
+            "audit/grade_change/students/{}".format(self.id),
+            None,
+            "events",
+            **kwargs
         )
 
     def get_licenses(self, **kwargs):
